@@ -22,6 +22,7 @@ public class BlockMemory {
 
     final BlockStorage storage;
     Map<Long, ByteBuffer> cachedBlocks = new HashMap<>();
+    Set<Long> dirtyBlocks = new HashSet<>();
 
     BlockPosition getBlock(long pos) throws IOException {
         return new BlockPosition(
@@ -90,6 +91,7 @@ public class BlockMemory {
         long block = blockInfo.getBlock();
         int offset = blockInfo.offset;
         while (totalOffset < bufferLen) {
+            dirtyBlocks.add(block);
             ByteBuffer b = getBlockBuffer(block);
             b.position(offset);
             int length = b.remaining() > (bufferLen - totalOffset) ? (bufferLen - totalOffset) : b.remaining();
@@ -108,6 +110,7 @@ public class BlockMemory {
         int offset = blockInfo.offset;
 
         while (src.remaining() > 0) {
+            dirtyBlocks.add(block);
             ByteBuffer dest = getBlockBuffer(block);
             dest.position(offset);
 
@@ -134,7 +137,7 @@ public class BlockMemory {
         int offset = blockInfo.offset;
 
         while (currPos < count) {
-
+            dirtyBlocks.add(block);
             ByteBuffer b = getBlockBuffer(block);
             b.position(offset);
             while (b.remaining() > 0) {
@@ -163,11 +166,13 @@ public class BlockMemory {
     public synchronized void commit() throws IOException {
 
         storage.beginTransaction();
-        for (Map.Entry<Long, ByteBuffer> e : cachedBlocks.entrySet()) {
-            storage.putBlock(e.getKey(), e.getValue());
+        for (Long id: dirtyBlocks) {
+            storage.putBlock(id, cachedBlocks.get(id));
         }
+
         storage.endTransaction();
-        cachedBlocks.clear();
+        dirtyBlocks.clear();
+
     }
 
 

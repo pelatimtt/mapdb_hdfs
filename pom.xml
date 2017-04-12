@@ -46,6 +46,16 @@
             <artifactId>slf4j-simple</artifactId>
             <version>1.7.24</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>apache-curator</artifactId>
+            <version>2.12.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.iq80.snappy</groupId>
+            <artifactId>snappy</artifactId>
+            <version>0.4</version>
+        </dependency>
 
         <dependency>
             <groupId>junit</groupId>
@@ -57,6 +67,12 @@
             <groupId>com.github.sakserv</groupId>
             <artifactId>hadoop-mini-clusters-hdfs</artifactId>
             <version>0.1.11</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-test</artifactId>
+            <version>2.12.0</version>
             <scope>test</scope>
         </dependency>
 

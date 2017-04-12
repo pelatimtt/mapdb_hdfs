@@ -67,10 +67,7 @@ public abstract class PersistentBlockStorage implements BlockStorage {
     public synchronized void putBlock(long n, ByteBuffer block) throws IOException {
         FileInfo f = blocks.get(n);
         f.channel.force(true);
-        f.channel.close();
-        f.file.close();
         putBlockFile(n, f.fd);
-        blocks.remove(n);
     }
 
     @Override

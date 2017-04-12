@@ -38,12 +38,15 @@ public class HdfsBlockStorageTest {
         File src = Files.createTempDir();
 
         BlockStorage bs = new HdfsBlockStorage(64000*10, fs, "/test", Files.createTempDir());
+      //  BlockStorage bs = new LocalFileBlockStorage(64000*10, Files.createTempDir(), Files.createTempDir());
         BlockMemory bm = new BlockMemory(bs);
         bm.open();
 
         DB db = DBMaker.volumeDB(new BlockMemoryVolume(bm), false).make();
+     //   DB db = DBMaker.tempFileDB().make();
         Map m = db.hashMap("test").create();
 
+        long t0 = System.currentTimeMillis();
         for (int ctr=0;ctr<150000;ctr++) {
             m.put(ctr,"test" + ctr);
             if (ctr % 20000 == 0)
@@ -53,16 +56,18 @@ public class HdfsBlockStorageTest {
         db.close();
         bm.close();
 
-        bs = new HdfsBlockStorage(64000*10, fs, "/test", Files.createTempDir());
-        bm = new BlockMemory(bs);
-        bm.open();
+        System.out.println(System.currentTimeMillis() - t0);
 
-        db = DBMaker.volumeDB(new BlockMemoryVolume(bm), true).make();
-        m = db.hashMap("test").open();
-
-        for (int ctr=0;ctr<100000;ctr++) {
-            assert(m.get(ctr).equals("test" + ctr));
-        }
+//        bs = new HdfsBlockStorage(64000*10, fs, "/test", Files.createTempDir());
+//        bm = new BlockMemory(bs);
+//        bm.open();
+//
+//        db = DBMaker.volumeDB(new BlockMemoryVolume(bm), true).make();
+//        m = db.hashMap("test").open();
+//
+//        for (int ctr=0;ctr<100000;ctr++) {
+//            assert(m.get(ctr).equals("test" + ctr));
+//        }
 
     }
 
